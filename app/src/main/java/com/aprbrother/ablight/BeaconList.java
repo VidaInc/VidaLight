@@ -1,5 +1,6 @@
 package com.aprbrother.ablight;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,12 +44,24 @@ public class BeaconList extends Activity {
 	private BeaconManager beaconManager;
 	private ArrayList<Beacon> myBeacons;
 	private RelativeLayout ll_beacons_progress;
+	private HelloServer server;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		init();
+		initHttpServer();
+	}
+
+	private void initHttpServer(){
+		server = new HelloServer();
+		try {
+			server.start();
+		} catch(IOException ioe) {
+			Log.w("Httpd", "The server could not start.");
+		}
+		Log.w("Httpd", "Web server initialized.");
 	}
 
 	/**
@@ -174,6 +187,8 @@ public class BeaconList extends Activity {
 	protected void onDestroy() {
 //		beaconManager.disconnect();
 		super.onDestroy();
+		if (server != null)
+			server.stop();
 	}
 
 	@Override

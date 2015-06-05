@@ -1,5 +1,6 @@
 package com.aprbrother.ablight;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import android.annotation.SuppressLint;
