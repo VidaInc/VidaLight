@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/btkfrank/VidaLight/app/libs/ab-sdk-beta1.5.4.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="5c754e27ae08b247fb8b2dd38cdcb0efb1b9a2bc">
+        <dex dex="/Users/btkfrank/VidaLight/app/build/intermediates/pre-dexed/debug/ab-sdk-beta1.5.4-2d0fec311d724190b882043c2f7b1c74b4120635.jar" />
+    </item>
+
+</items>
