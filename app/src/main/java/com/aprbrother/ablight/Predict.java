@@ -1,169 +1,224 @@
 package com.aprbrother.ablight;
 
 
-        public class Predict {
-            private double[] rssi;
-            private int size = 3;
-            private RoomData[] rooms = new RoomData[this.size];
-
-
-            public Predict (double[] a){
-                rssi = a;
-                //Room 0; invCovariance, determinant, mean vector initialization.
-                double[][] rm0m =  {{1,2,3},{1,2,3},{1,2,3}};
-                int rm0d = 1;
-                double[] rm0v = {1,2,3};
-                this.rooms[0] = new RoomData(0, new Matrix(size,rm0m),rm0d, new Vec(size,rm0v) );
-                //Room 1; invCovariance, determinant, mean vector initialization.
-                double[][] rm1m =  {{1,2,3},{1,2,3},{1,2,3}};
-                int rm1d = 1;
-                double[] rm1v = {1,2,3};
-                this.rooms[1] = new RoomData(1, new Matrix(size,rm1m),rm1d, new Vec(size,rm1v) );
-                //Room 2; invCovariance, determinant, mean vector initialization.
-                double[][] rm2m =  {{1,2,3},{1,2,3},{1,2,3}};
-                int rm2d = 1;
-                double[] rm2v = {1,2,3};
-                this.rooms[2] = new RoomData(0, new Matrix(size,rm2m),rm2d, new Vec(size,rm2v) );
+    public class Predict {
+        /*
+    //Testing function
+        public static void main(String[] args) {
+            double[][] rs_input = { { -76, -74, -82 }, { -76, -76, -98 },
+                    { -84, -68, -91 }, { -81, -74, -93 }, { -60, -67, -88 },
+                    { -69, -61, -75 }, { -73, -55, -79 }, { -79, -76, -84 },
+                    { -81, -81, -81 }, { -79, -73, -77 }, { -85, -79, -84 },
+                    { -70, -75, -72 }, { -72, -75, -71 }, { -68, -73, -72 },
+                    { -62, -70, -83 }, { -64, -74, -82 }, { -63, -80, -79 },
+                    { -69, -70, -87 }, { -56, -82, -83 }, { -77, -83, -88 },
+                    { -67, -81, -78 } };
+            double[] results = {1.63428662e-04, 8.68039098e-06, 9.16788650e-05, 8.92326031e-05
+                    , 5.79290679e-07, 2.98266324e-05, 2.65943326e-05, 1.64803858e-04
+                    , 3.95264821e-05, 5.28570143e-05, 5.48630049e-05, 9.52266087e-06
+                    , 6.36092687e-06, 1.07121038e-05, 7.68134346e-06, 1.84079716e-05
+                    , 6.92677770e-06, 4.41128023e-05, 2.30005724e-07, 7.81264450e-05
+                    , 1.40080506e-05};
+            double sum = 0; int i =0;
+            for(double[] rssi : rs_input){
+                //how to predict by pass in double[] rssi
+                Predict p = new Predict(rssi);
+                RoomData rm = p.RoomPrediction();
+                System.out.println("Predicted minorID"+rm.getMinor());
             }
+        }
+        //end of testing code
+*/
 
-            public int RoomPrediction(){
-                int room = 0;
-                Vec rs = new Vec(this.size, this.rssi);
-                double comparator = Gaussian(this.rooms[0], rs);
-                for(int i=1; i<this.rooms.length; i++){
-                    double result = Gaussian(this.rooms[i],rs);
-                    if(result > comparator){
-                        room = this.rooms[i].getRoomNum();
-                        comparator = result;
-                    }
-                }
-                return room;
-            }
-            //apply function.
-            private double Gaussian (RoomData rm, Vec rssi) {
-                double result;
-                double constant1 = Math.pow(0.111, (this.size * -0.5));
-                Vec x_u = rssi.subtraction(rm.getMean());
-                double exp_scalar = -0.5 * this.VbyMbyV(this.size, x_u, rm.getInvCov(), x_u);
-                result = Math.exp(exp_scalar) * constant1 * rm.getDeterminant();
-                return result;
-            }
+        private double[] rssi;
+        private int size = 3;
+        private int numofroom = 3;
+        private RoomData[] rooms = new RoomData[this.numofroom];
+        private static RoomData current_room;
 
-                //operation required:  vec*mat*vec
+        public RoomData getCurrent_room() {
+            return current_room;
+        }
 
-            public double VbyMbyV(int size, Vec v1, Matrix m, Vec v2){
-                double result = 0;
-                double[] inter_value = new double[size];   //store interm value
-                for(int i = 0; i<size;i++){
-                    for(int j=0;j<size;j++){
-                        inter_value[i] += (m.getEntry(j,i)*v1.getEntry(j));
-                    }
-                }
-                for (int i = 0;i<size;i++){
-                    result += (inter_value[i]*v2.getEntry(i));
-                }
-                return result;
-            }
+        //Need to change constructor into objects with minor id and rssi.
+        public Predict(double[] a) {
+            rssi = a;
+            //Room 0; invCovariance, determinant, mean vector initialization.
+            double[][] rm0m = {{0.02702889,0.0023533,-0.01310845}, {0.0023533,0.01598157,-0.00878754}, {-0.01310845,-0.00878754,0.03681133}};
+            double rm0d = 296.09471103;
+            double[] rm0v = {-78.43859649,-71.21052632,-85.01754386};
+            this.rooms[0] = new RoomData(0, 52424, new Matrix(size, rm0m), rm0d, new Vec(size, rm0v));
+            //Room 1; invCovariance, determinant, mean vector initialization.
+            double[][] rm1m = {{0.02454978,-0.00018057,-0.00865205}
+                    ,{-0.00018057,0.01541415,-0.00825791}
+                    ,{-0.00865205,-0.00825791,0.03150619}};
+            double rm1d = 332.089316614;
+            double[] rm1v = {-77.12280702, -71.15789474, -84.75438596};
+            this.rooms[1] = new RoomData(0, 12523, new Matrix(size, rm1m), rm1d, new Vec(size, rm1v));
+            //Room 2; invCovariance, determinant, mean vector initialization.
+            double[][] rm2m = {{0.03408184,-0.00497511,0.00478356}
+                    ,{-0.00497511,0.03487818,0.00586482}
+                    ,{0.00478356,0.00586482,0.04060706}};
+            double rm2d = 149.045536914;
+            double[] rm2v = {-64.33333333, -77.61904762, -80.87301587};
+            this.rooms[2] = new RoomData(1, 34734, new Matrix(size, rm2m), rm2d, new Vec(size, rm2v));
         }
 
 
-class RoomData{
+        public RoomData RoomPrediction() {
+            RoomData room = this.rooms[0];
+            Vec rs = new Vec(this.size, this.rssi);
+            double comparator = Gaussian(this.rooms[0], rs);;
 
-    private final int roomNum;
-    private final Matrix invCov;
-    private final int determinant;
-    private final Vec mean;
-
-    public RoomData(int RN, Matrix a, int det, Vec v){
-        this.roomNum = RN;
-        this.invCov = a;
-        this.determinant = det;
-        this.mean = v;
-    }
-
-    public int getRoomNum() {
-        return roomNum;
-    }
-    public Matrix getInvCov() {
-        return invCov;
-    }
-
-    public int getDeterminant() {
-        return determinant;
-    }
-
-    public Vec getMean() {
-        return mean;
-    }
-}
-
-
-class Matrix {
-    private double[][] m;
-//            private int size;
-
-    //setter getter constructor
-//            public Matrix(int s) {
-//                this.m=new double[s][s];
-//                this.size = s;
-//            }
-
-    public Matrix(int s, double[][] data) {
-        this.m=new double[s][s];
-//                this.size = s;
-        this.m = data;
-    }
-
-//            public void setMat(int s, double[][] data){
-//                this.m = data;
-//            }
-
-    public double getEntry(int ind1, int ind2){
-        return m[ind1][ind2];
-    }
-
-
-
-}
-
-
-class Vec {
-    private double[] v;
-    private int size;
-
-
-//setter getter constructor
-
-    public Vec (int s){
-        this.v= new double[s];
-        this.size = s;
-    }
-    public Vec (int s, double[] data ){
-        this.v = new double[s];
-        this.setVec(data);
-    }
-
-    public void setVec(double[] data){
-        this.v = data;
-    }
-
-    public double getEntry(int index){
-        return this.v[index];
-    }
-
-
-    //operation required: subtraction
-    public Vec subtraction( Vec subBy){
-        Vec result = new Vec(this.size );
-        double[] data = new double[size];
-        for (int i=0; i<size;i++){
-            data[i]=this.v[i] - subBy.v[i];
+	        for (int i = 0; i < this.rooms.length; i++) {
+	            double result = Gaussian(this.rooms[i], rs);
+	            if (result > comparator) {
+	                room = this.rooms[i];
+	                comparator = result;
+                    this.current_room = room;
+                }
+	        }
+            return room;
         }
-        result.setVec(data);
-        return result;
+
+        //apply function.
+        private double Gaussian(RoomData rm, Vec rssi) {
+            double result;
+            double constant1 = Math.pow(6.2831853, (this.size * -0.5));
+            Vec x_u = rssi.subtraction(rm.getMean());
+            double exp_scalar = -0.5 * this.VbyMbyV(this.size, x_u, rm.getInvCov(), x_u);
+            result = Math.exp(exp_scalar) * constant1 / rm.getDeterminant();
+//	        System.out.print("/exp:"+Math.exp(exp_scalar));
+//	        System.out.print("/const:"+constant1);
+//	        System.out.println("/det:"+rm.getDeterminant());
+
+            return result;
+        }
+
+        //operation required:  vec*mat*vec
+
+        public double VbyMbyV(int size, Vec v1, Matrix m, Vec v2) {
+            double result = 0;
+            double[] inter_value = new double[size];   //store interm value
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    inter_value[i] += (m.getEntry(j, i) * v1.getEntry(j));
+                }
+            }
+            for (int i = 0; i < size; i++) {
+                result += (inter_value[i] * v2.getEntry(i));
+            }
+            return result;
+        }
+    }
+
+    class RoomData {
+
+        private final int majorID;
+        private final int minorID;
+        private final Matrix invCov;
+        private final double determinant;
+        private final Vec mean;
+
+        public RoomData(int maj, int min, Matrix a, double rm0d, Vec v) {
+            this.majorID = maj;
+            this.minorID = min;
+            this.invCov = a;
+            this.determinant = rm0d;
+            this.mean = v;
+        }
+
+        public int getMajor() {
+            return majorID;
+        }
+
+        public int getMinor(){
+            return minorID;
+        }
+
+        public Matrix getInvCov() {
+            return invCov;
+        }
+
+        public double getDeterminant() {
+            return determinant;
+        }
+
+        public Vec getMean() {
+            return mean;
+        }
+    }
+
+
+    class Matrix {
+        private double[][] m;
+//	            private int size;
+
+        //setter getter constructor
+//	            public Matrix(int s) {
+//	                this.m=new double[s][s];
+//	                this.size = s;
+//	            }
+
+        public Matrix(int s, double[][] data) {
+            this.m = new double[s][s];
+//	                this.size = s;
+            this.m = data;
+        }
+
+//	            public void setMat(int s, double[][] data){
+//	                this.m = data;
+//	            }
+
+        public double getEntry(int ind1, int ind2) {
+            return m[ind1][ind2];
+        }
+
+
+    }
+
+
+    class Vec {
+        private double[] v;
+        private int size;
+
+
+        //setter getter constructor
+
+        public Vec(int s) {
+            this.v = new double[s];
+            this.size = s;
+        }
+
+        public Vec(int s, double[] data) {
+            this.v = new double[s];
+            this.size = s;
+            this.setVec(data);
+        }
+
+        public void setVec(double[] data) {
+            this.v = data;
+        }
+
+        public double getEntry(int index) {
+            return this.v[index];
+        }
+
+
+        //operation required: subtraction
+        public Vec subtraction(Vec subBy) {
+            Vec result = new Vec(this.size);
+            double[] data = new double[size];
+            for (int i = 0; i < size; i++) {
+                data[i] = this.v[i] - subBy.v[i];
+            }
+            result.setVec(data);
+            return result;
+        }
+
+
     }
 
 
 
-}
 
