@@ -67,6 +67,12 @@ public class BeaconList extends Activity {
 	/**
 	 * 初始化操作
 	 */
+
+	public static Beacon getBeaconByMacAdd(String s){
+		//find from minor id
+		return null;
+	}
+
 	private void init() {
 		myBeacons = new ArrayList<Beacon>();
 		ListView lv = (ListView) findViewById(R.id.lv);
@@ -86,7 +92,9 @@ public class BeaconList extends Activity {
 					final List<Beacon> beacons) {
 				if(beacons!=null && beacons.size()>0){
 					for(Beacon beacon : beacons){
-						System.out.println("hello" + beacon.getProximityUUID());
+						Log.d("beacon", "" + beacon.getMinor());
+						Log.d("beacon", "" + beacon.getMacAddress());
+						Log.d("beacon", "" + beacon.getName());
 						if(beacon.getName()!=null && !myBeacons.contains(beacon)){							
 							myBeacons.add(beacon);
 						}

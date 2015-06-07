@@ -1,5 +1,7 @@
 package com.aprbrother.ablight;
 
+import android.util.Log;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -62,7 +64,8 @@ public class HelloServer extends NanoHTTPD {
         Method method = session.getMethod();
 
         if(method == Method.POST){
-            System.out.println(session.getInputStream());
+//            Log.d("MyApp",session.getInputStream());
+
 
 
             Integer contentLength = Integer.parseInt(session.getHeaders().get( "content-length" ));
@@ -70,13 +73,13 @@ public class HelloServer extends NanoHTTPD {
             try
             {
                 session.getInputStream().read( buf, 0, contentLength );
-                System.out.println( new String(buf) );
+                Log.d("MyApp", "hello" + new String(buf));
             } catch( IOException e2 )
             {
-
+                System.out.println( "error" );
             }
             Map<String, String> files = new HashMap<String, String>();
-//        Method method = session.getMethod();
+            method = session.getMethod();
             if (Method.PUT.equals(method) || Method.POST.equals(method)) {
                 try {
                     session.parseBody(files);
@@ -93,6 +96,20 @@ public class HelloServer extends NanoHTTPD {
 
             return newFixedLengthResponse(postBody); // Or postParameter.
         }
+//        if(method == Method.POST){
+//            byte[] postBytes = new byte[fbuf.remaining()];
+//            fbuf.get(postBytes);
+//            String postLine = new String(postBytes).trim();
+//            // Handle application/x-www-form-urlencoded
+//            if ("application/x-www-form-urlencoded".equalsIgnoreCase(contentType)) {
+//                decodeParms(postLine, this.parms);
+//            } else if (postLine.length() != 0) {
+//                // Special case for raw POST data => create a
+//                // special files entry "postData" with raw content
+//                // data
+//                files.put("postData", postLine);
+//            }
+//        }
         else{
             String uri = session.getUri();
             HelloServer.LOG.info(method + " '" + uri + "' ");
@@ -115,5 +132,8 @@ public class HelloServer extends NanoHTTPD {
 
 
     }
+
+
+
 
 }
