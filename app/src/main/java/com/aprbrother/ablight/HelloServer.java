@@ -2,6 +2,10 @@ package com.aprbrother.ablight;
 
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -64,52 +68,17 @@ public class HelloServer extends NanoHTTPD {
         Method method = session.getMethod();
 
         if(method == Method.POST){
-//            Log.d("MyApp",session.getInputStream());
-
-
-
             Integer contentLength = Integer.parseInt(session.getHeaders().get( "content-length" ));
+
             byte[] buf = new byte[contentLength];
-            try
-            {
-                session.getInputStream().read( buf, 0, contentLength );
-                Log.d("MyApp", "hello" + new String(buf));
-            } catch( IOException e2 )
-            {
+            try {
+                session.getInputStream().read(buf, 0, contentLength);
+            } catch( IOException e2 ) {
                 System.out.println( "error" );
             }
-            Map<String, String> files = new HashMap<String, String>();
-            method = session.getMethod();
-            if (Method.PUT.equals(method) || Method.POST.equals(method)) {
-                try {
-                    session.parseBody(files);
-                } catch (IOException ioe) {
-                    return newFixedLengthResponse("SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
-                } catch (ResponseException re) {
-                    return newFixedLengthResponse(re.getMessage());
-                }
-            }
-            // get the POST body
-            String postBody = session.getQueryParameterString();
-            // or you can access the POST request's parameters
-            String postParameter = session.getParms().get("parameter");
-
-            return newFixedLengthResponse(postBody); // Or postParameter.
+            Log.d("Post Parameter", new String(buf));
+            return newFixedLengthResponse(new String(buf)); // Or postParameter.
         }
-//        if(method == Method.POST){
-//            byte[] postBytes = new byte[fbuf.remaining()];
-//            fbuf.get(postBytes);
-//            String postLine = new String(postBytes).trim();
-//            // Handle application/x-www-form-urlencoded
-//            if ("application/x-www-form-urlencoded".equalsIgnoreCase(contentType)) {
-//                decodeParms(postLine, this.parms);
-//            } else if (postLine.length() != 0) {
-//                // Special case for raw POST data => create a
-//                // special files entry "postData" with raw content
-//                // data
-//                files.put("postData", postLine);
-//            }
-//        }
         else{
             String uri = session.getUri();
             HelloServer.LOG.info(method + " '" + uri + "' ");
@@ -126,11 +95,6 @@ public class HelloServer extends NanoHTTPD {
 
             return newFixedLengthResponse(msg);
         }
-
-
-
-
-
     }
 
 
