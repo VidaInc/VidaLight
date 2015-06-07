@@ -1,7 +1,10 @@
 package com.aprbrother.ablight;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Logger;
+import java.io.IOException;
+//import java.lang.*;
 
 /*
  * #%L
@@ -58,55 +61,59 @@ public class HelloServer extends NanoHTTPD {
     public Response serve(IHTTPSession session) {
         Method method = session.getMethod();
 
-//        System.out.println(session.getInputStream());
+        if(method == Method.POST){
+            System.out.println(session.getInputStream());
 
 
-//        Integer contentLength = Integer.parseInt(session.getHeaders().get( "content-length" ));
-//        byte[] buf = new byte[contentLength];
-//        try
-//        {
-//            session.getInputStream().read( buf, 0, contentLength );
-//            System.out.println( new String(buf) );
-//        }
-//        catch( IOException e2 )
-//        {
-//        }
-//        Map<String, String> files = new HashMap<String, String>();
-////        Method method = session.getMethod();
-//        if (Method.PUT.equals(method) || Method.POST.equals(method)) {
-//            try {
-//                session.parseBody(files);
-//            } catch (IOException ioe) {
-//                return new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
-//            } catch (ResponseException re) {
-//                return new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
-//            }
-//        }
-//        // get the POST body
-//        String postBody = session.getQueryParameterString();
-//        // or you can access the POST request's parameters
-//        String postParameter = session.getParms().get("parameter");
-//
-//        return new Response(postBody); // Or postParameter.
+            Integer contentLength = Integer.parseInt(session.getHeaders().get( "content-length" ));
+            byte[] buf = new byte[contentLength];
+            try
+            {
+                session.getInputStream().read( buf, 0, contentLength );
+                System.out.println( new String(buf) );
+            } catch( IOException e2 )
+            {
 
+            }
+            Map<String, String> files = new HashMap<String, String>();
+//        Method method = session.getMethod();
+            if (Method.PUT.equals(method) || Method.POST.equals(method)) {
+                try {
+                    session.parseBody(files);
+                } catch (IOException ioe) {
+                    return newFixedLengthResponse("SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+                } catch (ResponseException re) {
+                    return newFixedLengthResponse(re.getMessage());
+                }
+            }
+            // get the POST body
+            String postBody = session.getQueryParameterString();
+            // or you can access the POST request's parameters
+            String postParameter = session.getParms().get("parameter");
 
-        String uri = session.getUri();
-        HelloServer.LOG.info(method + " '" + uri + "' ");
+            return newFixedLengthResponse(postBody); // Or postParameter.
+        }
+        else{
+            String uri = session.getUri();
+            HelloServer.LOG.info(method + " '" + uri + "' ");
 
-        String msg = "<html><body><h1>Hello server</h1>\n";
-        Map<String, String> parms = session.getParms();
-        if (parms.get("username") == null) {
-            msg += "<form action='?' method='get'>\n" + "  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n";
-        } else {
-            msg += "<p>Hello, " + parms.get("username") + "!</p>";
+            String msg = "<html><body><h1>Hello server</h1>\n";
+            Map<String, String> parms = session.getParms();
+            if (parms.get("username") == null) {
+                msg += "<form action='?' method='get'>\n" + "  <p>Your name: <input type='text' name='username'></p>\n" + "</form>\n";
+            } else {
+                msg += "<p>Hello, " + parms.get("username") + "!</p>";
+            }
+
+            msg += "</body></html>\n";
+
+            return newFixedLengthResponse(msg);
         }
 
-        msg += "</body></html>\n";
 
-        return newFixedLengthResponse(msg);
+
+
+
     }
 
-//    public Response serve(){
-//
-//   serve }
 }
