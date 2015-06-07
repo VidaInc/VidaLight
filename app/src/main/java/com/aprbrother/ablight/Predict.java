@@ -44,28 +44,23 @@ package com.aprbrother.ablight;
         public Predict(double[] a) {
             rssi = a;
             //Room 0; invCovariance, determinant, mean vector initialization.
-            double[][] rm0m =
-                    {{ 0.01813697,0.00659309, -0.00403546},
-                            { 0.00659309,0.0230475, 0.00425336},
-                            {-0.00403546,0.00425336,0.0395935 }};
-            double rm0d = 268.223868385;
-            double[] rm0v = {-70.03508772, -80.43859649, -78.29824561};
+            double[][] rm0m = {{0.02702889,0.0023533,-0.01310845}, {0.0023533,0.01598157,-0.00878754}, {-0.01310845,-0.00878754,0.03681133}};
+            double rm0d = 296.09471103;
+            double[] rm0v = {-78.43859649,-71.21052632,-85.01754386};
             this.rooms[0] = new RoomData(0, 52424, new Matrix(size, rm0m), rm0d, new Vec(size, rm0v));
-//Room 1; invCovariance, determinant, mean vector initialization.
-            double[][] rm1m = {{ 0.03012743,0.00190745, -0.00516787},
-                    { 0.00190745,0.01646801,0.00071672},
-                    {-0.00516787,0.00071672,0.02978893}};
-            double rm1d = 265.357063883;
-            double[] rm1v =
-                    {-80.43478261, -67.65217391, -82.19565217};
+            //Room 1; invCovariance, determinant, mean vector initialization.
+            double[][] rm1m = {{0.02454978,-0.00018057,-0.00865205}
+                    ,{-0.00018057,0.01541415,-0.00825791}
+                    ,{-0.00865205,-0.00825791,0.03150619}};
+            double rm1d = 332.089316614;
+            double[] rm1v = {-77.12280702, -71.15789474, -84.75438596};
             this.rooms[1] = new RoomData(0, 12523, new Matrix(size, rm1m), rm1d, new Vec(size, rm1v));
-//Room 2; invCovariance, determinant, mean vector initialization.
-            double[][] rm2m =
-                    {{1.77290576e-02, 7.12135305e-04, 2.96985539e-03},
-                            {7.12135305e-04, 4.73639410e-02, 3.91607048e-05},
-                            {2.96985539e-03, 3.91607048e-05, 1.99390916e-02}};
-            double rm2d = 247.57109853;
-            double[] rm2v ={-76.02325581, -87.11627907, -66.65116279};
+            //Room 2; invCovariance, determinant, mean vector initialization.
+            double[][] rm2m = {{0.03408184,-0.00497511,0.00478356}
+                    ,{-0.00497511,0.03487818,0.00586482}
+                    ,{0.00478356,0.00586482,0.04060706}};
+            double rm2d = 149.045536914;
+            double[] rm2v = {-64.33333333, -77.61904762, -80.87301587};
             this.rooms[2] = new RoomData(1, 34734, new Matrix(size, rm2m), rm2d, new Vec(size, rm2v));
         }
 

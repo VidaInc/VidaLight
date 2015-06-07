@@ -2,11 +2,15 @@ package com.aprbrother.ablight;
 
 import android.util.Log;
 
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.io.IOException;
-
+//import java.lang.*;
 
 /*
  * #%L
