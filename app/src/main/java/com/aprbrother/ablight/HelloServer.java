@@ -76,7 +76,14 @@ public class HelloServer extends NanoHTTPD {
             } catch( IOException e2 ) {
                 System.out.println( "error" );
             }
-            Log.d("Post Parameter", new String(buf));
+            String s = new String(buf);
+            Log.d("Post Parameter", s);
+            try{
+                JasonParse.JasonParse(s);
+            }catch(Exception e){
+
+            }
+
             return newFixedLengthResponse(new String(buf)); // Or postParameter.
         }
         else{
