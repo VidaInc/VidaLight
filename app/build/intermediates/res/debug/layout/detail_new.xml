@@ -26,4 +26,4 @@
             android:onClick="back"
             android:src="@drawable/back" />
     </RelativeLayout>
-</LinearLayout><!-- From: file:/Users/btkfrank/VidaLight/app/src/main/res/layout/detail_new.xml -->
+</LinearLayout><!-- From: file:/C:/Users/Eric/Desktop/VIDA/VidaLight/app/src/main/res/layout/detail_new.xml -->
