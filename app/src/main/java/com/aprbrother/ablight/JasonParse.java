@@ -54,15 +54,15 @@ public class JasonParse {
                 double[] rssiArray = new double[beacons.length()];
 
                 // Check if json is to be proecessed
-                if (beacons.length() > 3) {
+                if (beacons.length() >= 3) {
                     // looping through all beacon objects
                     for (int i = 0; i < beacons.length(); i++) {
                         JSONObject c = beacons.getJSONObject(i);
 
-                        String id = c.getString(TAG_ID);
-                        String uuid = c.getString(TAG_UUID);
-                        String major = c.getString(TAG_MAJOR);
-                        String minor = c.getString(TAG_MINOR);
+//                        String id = c.getString(TAG_ID);
+//                        String uuid = c.getString(TAG_UUID);
+//                        String major = c.getString(TAG_MAJOR);
+                        String minor = c.getString("beaconID");
                         String rssi = c.getString(TAG_RSSI);
 
                         // Casting of variables
@@ -81,7 +81,7 @@ public class JasonParse {
                     }
                     // call Jack's function with beaconTreeMap
                     Predict p = new Predict(rssiArray);
-                    System.out.println(p.RoomPrediction().getMinor());
+                    Log.d("minor id", p.RoomPrediction().getMinor());
 
                 } else {
                     Log.e("ServiceHandler", "Couldn't get any enough beacon data");
