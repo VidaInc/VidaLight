@@ -36,13 +36,13 @@ public class RssiAutoControl extends Activity{
 
     private long lastTime;
 
-    private void init() {
-        beacon = BeaconList.getBeaconByMacAdd("D0:FF:50:67:7C:4A");
-        myDevice = deviceFromBeacon(beacon);
-        mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
-        write(100);
-
-    }
+//    private void init() {
+//        beacon = BeaconList.getBeaconByMacAdd("D0:FF:50:67:7C:4A");
+//        myDevice = deviceFromBeacon(beacon);
+//        mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
+//        write(100);
+//
+//    }
 
     @SuppressLint("NewApi")
     private BluetoothDevice deviceFromBeacon(Beacon beacon) {

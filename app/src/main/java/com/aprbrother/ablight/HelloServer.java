@@ -2,9 +2,12 @@ package com.aprbrother.ablight;
 
 import android.util.Log;
 
+import com.aprilbrother.aprilbrothersdk.Beacon;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
@@ -63,6 +66,17 @@ public class HelloServer extends NanoHTTPD {
         super(8080);
     }
 
+    public String mac;
+
+    public BeaconList BList;
+
+    public HelloServer(BeaconList ls){
+        super(8080);
+        this.BList = ls;
+    }
+
+
+
     @Override
     public Response serve(IHTTPSession session) {
         Method method = session.getMethod();
@@ -79,7 +93,9 @@ public class HelloServer extends NanoHTTPD {
             String s = new String(buf);
             Log.d("Post Parameter", s);
             try{
-                JasonParse.JasonParse(s);
+                mac = JasonParse.JasonParse(s);
+                System.out.println("ddebug Json Result:"+mac);
+                BList.control(mac);
             }catch(Exception e){
 
             }

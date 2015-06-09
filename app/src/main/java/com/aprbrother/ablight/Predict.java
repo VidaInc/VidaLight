@@ -50,7 +50,7 @@ package com.aprbrother.ablight;
                             {-0.00403546,0.00425336,0.0395935 }};
             double rm0d = 268.223868385;
             double[] rm0v = {-70.03508772, -80.43859649, -78.29824561};
-            this.rooms[0] = new RoomData(0, "D0:FF:50:67:7C:4A", new Matrix(size, rm0m), rm0d, new Vec(size, rm0v));
+            this.rooms[0] = new RoomData(0, "B4:99:4C:89:72:9E", new Matrix(size, rm0m), rm0d, new Vec(size, rm0v));
 //Room 1; invCovariance, determinant, mean vector initialization.
             double[][] rm1m = {{ 0.03012743,0.00190745, -0.00516787},
                     { 0.00190745,0.01646801,0.00071672},
@@ -58,7 +58,7 @@ package com.aprbrother.ablight;
             double rm1d = 265.357063883;
             double[] rm1v =
                     {-80.43478261, -67.65217391, -82.19565217};
-            this.rooms[1] = new RoomData(0, "A0425A33-D9E0-2BC8-72A6-4163287685AA", new Matrix(size, rm1m), rm1d, new Vec(size, rm1v));
+            this.rooms[1] = new RoomData(0, "B4:99:4C:89:72:9E", new Matrix(size, rm1m), rm1d, new Vec(size, rm1v));
 //Room 2; invCovariance, determinant, mean vector initialization.
             double[][] rm2m =
                     {{1.77290576e-02, 7.12135305e-04, 2.96985539e-03},
@@ -66,7 +66,7 @@ package com.aprbrother.ablight;
                             {2.96985539e-03, 3.91607048e-05, 1.99390916e-02}};
             double rm2d = 247.57109853;
             double[] rm2v ={-76.02325581, -87.11627907, -66.65116279};
-            this.rooms[2] = new RoomData(1, "9F8036CE-125B-18B8-A232-C82FE667C611", new Matrix(size, rm2m), rm2d, new Vec(size, rm2v));
+            this.rooms[2] = new RoomData(1, "B4:99:4C:89:72:9E", new Matrix(size, rm2m), rm2d, new Vec(size, rm2v));
         }
 
 
