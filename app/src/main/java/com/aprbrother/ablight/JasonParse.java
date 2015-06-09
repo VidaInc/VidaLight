@@ -43,7 +43,8 @@ public class JasonParse {
     private static final String TAG_MINOR = "minor";
     private static final String TAG_RSSI = "rssi";
 
-    public static void JasonParse (String jsonStr) throws IOException {
+    public static String JasonParse (String jsonStr) throws IOException {
+        String result = "";
         if (jsonStr != null) {
             try {
                 JSONObject jsonObj = new JSONObject(jsonStr);
@@ -81,7 +82,10 @@ public class JasonParse {
                     }
                     // call Jack's function with beaconTreeMap
                     Predict p = new Predict(rssiArray);
+                    result = p.RoomPrediction().getMinor();
+
                     Log.d("minor id", p.RoomPrediction().getMinor());
+
 
                 } else {
                     Log.e("ServiceHandler", "Couldn't get any enough beacon data");
@@ -93,6 +97,7 @@ public class JasonParse {
         } else {
             Log.e("ServiceHandler", "Couldn't get any data from the json package");
         }
+        return result;
 
     }
 

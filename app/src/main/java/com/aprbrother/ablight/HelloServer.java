@@ -63,6 +63,8 @@ public class HelloServer extends NanoHTTPD {
         super(8080);
     }
 
+    public String mac;
+
     @Override
     public Response serve(IHTTPSession session) {
         Method method = session.getMethod();
@@ -79,7 +81,9 @@ public class HelloServer extends NanoHTTPD {
             String s = new String(buf);
             Log.d("Post Parameter", s);
             try{
-                JasonParse.JasonParse(s);
+                mac = JasonParse.JasonParse(s);
+                BeaconList list = new BeaconList();
+                list.control(mac);
             }catch(Exception e){
 
             }

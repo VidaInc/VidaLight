@@ -4,9 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -46,12 +55,29 @@ public class BeaconList extends Activity {
 	private RelativeLayout ll_beacons_progress;
 	private HelloServer server;
 
+
+	private Beacon beacon;
+	private BluetoothDevice myDevice;
+	private BluetoothGatt mBluetoothGatt;
+	public final static UUID BEACONSERVICEUUID = UUID
+			.fromString("0000fab0-0000-1000-8000-00805f9b34fb");
+	public final static UUID BEACONPROXIMITYUUID = UUID
+			.fromString("0000fab1-0000-1000-8000-00805f9b34fb");
+	public final static UUID BEACONMAJORUUID = UUID
+			.fromString("0000fab2-0000-1000-8000-00805f9b34fb");
+
+	public static final UUID CCCD = UUID
+			.fromString("00002901-0000-1000-8000-00805f9b34fb");
+
+	private long lastTime;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		init();
 		initHttpServer();
+//		control();
 	}
 
 	private void initHttpServer(){
@@ -68,8 +94,103 @@ public class BeaconList extends Activity {
 	 * 初始化操作
 	 */
 
-	public static Beacon getBeaconByMacAdd(String s){
-		//find from minor id
+	public void control(String macAdd) {
+		BeaconList list =  new BeaconList();
+		beacon = list.getBeaconByMacAdd(macAdd);
+		myDevice = deviceFromBeacon(beacon);
+		mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
+		write(100);
+
+	}
+
+	@SuppressLint("NewApi")
+	private BluetoothDevice deviceFromBeacon(Beacon beacon) {
+		BluetoothManager bluetoothManager = (BluetoothManager) this
+				.getSystemService("bluetooth");
+		BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+		return bluetoothAdapter.getRemoteDevice(beacon.getMacAddress());
+	}
+
+	BluetoothGattService RxService;
+	BluetoothGattCharacteristic RxChar;
+
+	private void write(int i) {
+		byte[] value = new byte[6];
+		value[0] = 'e';
+		value[1] = (byte) i;
+		value[2] = 1;
+		value[3] = 1;
+		value[4] = 1;
+		value[5] = (byte) (value[1] ^ value[2] ^ value[3] ^ value[4]);
+		writeCharacteristic(value, BEACONSERVICEUUID, BEACONPROXIMITYUUID);
+	}
+
+	public boolean writeCharacteristic(byte[] value, UUID mService,
+									   UUID mCharacteristic) {
+		if (RxService == null)
+			RxService = mBluetoothGatt.getService(mService);
+
+		showMessage("mBluetoothGatt null" + mBluetoothGatt);
+		if (RxService == null) {
+			showMessage("Rx service not found!");
+			return false;
+		}
+		if (RxChar == null)
+			RxChar = RxService.getCharacteristic(mCharacteristic);
+		if (RxChar == null) {
+			showMessage("Rx charateristic not found!");
+			return false;
+		}
+		RxChar.setValue(value);
+		boolean status = mBluetoothGatt.writeCharacteristic(RxChar);
+		Log.d(TAG, "write TXchar - status=" + status);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return status;
+	}
+
+	private BluetoothGattCallback myGattCallback = new BluetoothGattCallback() {
+
+		@Override
+		public void onConnectionStateChange(BluetoothGatt gatt, int status,
+											int newState) {
+			Log.i(TAG, "connect newState = " + newState);
+			if (newState == BluetoothProfile.STATE_CONNECTED) {
+				Log.i(TAG, "Attempting to start service discovery:"
+						+ mBluetoothGatt.discoverServices());
+
+			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+				Log.i(TAG, "Disconnected from GATT server.");
+			}
+			super.onConnectionStateChange(gatt, status, newState);
+		}
+
+		@Override
+		public void onCharacteristicWrite(BluetoothGatt gatt,
+										  BluetoothGattCharacteristic characteristic, int status) {
+			Log.i(TAG, "onCharacteristicWrite status = " + status);
+			super.onCharacteristicWrite(gatt, characteristic, status);
+		}
+
+	};
+
+	private void showMessage(String msg) {
+		Log.e(TAG, msg);
+	}
+
+
+
+
+	public Beacon getBeaconByMacAdd(String s){
+		//find from mac address
+		for (Beacon bc : this.myBeacons){
+			if(bc.getMacAddress().equalsIgnoreCase(s)){
+				return bc;
+			}
+		}
 		return null;
 	}
 
@@ -208,6 +329,12 @@ public class BeaconList extends Activity {
 		} catch (RemoteException e) {
 			Log.d(TAG, "Error while stopping ranging", e);
 		}
+
+		if (mBluetoothGatt != null) {
+			mBluetoothGatt.disconnect();
+			mBluetoothGatt.close();
+		}
+
 		super.onStop();
 	}
 }
