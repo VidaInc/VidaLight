@@ -76,7 +76,6 @@ public class BeaconList extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		init();
-		initHttpServer();
 //		control();
 	}
 
@@ -101,8 +100,7 @@ public class BeaconList extends Activity {
 		myDevice = deviceFromBeacon(beacon);
 		mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
 		System.out.println("ddebug about to write 100 to"+beacon.getMacAddress());
-		write(100);
-
+		write(10);
 		if(mBluetoothGatt != null) {
 			mBluetoothGatt.disconnect();
 			mBluetoothGatt.close();
@@ -138,18 +136,28 @@ public class BeaconList extends Activity {
 
 	public boolean writeCharacteristic(byte[] value, UUID mService,
 									   UUID mCharacteristic) {
-		if (RxService == null)
-			RxService = mBluetoothGatt.getService(mService);
-
-		showMessage("mBluetoothGatt null" + mBluetoothGatt);
+		int tries = 10;
 		if (RxService == null) {
-			showMessage("Rx service not found!");
+			int i=0;
+			while(RxService == null && i < tries) {
+				i++;
+				RxService = mBluetoothGatt.getService(mService);
+			}
+		}
+		showMessage("mBluetoothGatt RxService null" + mBluetoothGatt);
+		if (RxService == null) {
+			showMessage("Rx service not found! in control");
 			return false;
 		}
-		if (RxChar == null)
-			RxChar = RxService.getCharacteristic(mCharacteristic);
+		if (RxChar == null){
+			int i=0;
+			while(RxChar == null && i < tries) {
+				i++;
+				RxChar = RxService.getCharacteristic(mCharacteristic);
+			}
+		}
 		if (RxChar == null) {
-			showMessage("Rx charateristic not found!");
+			showMessage("Rx charateristic not found! in control");
 			return false;
 		}
 		RxChar.setValue(value);
@@ -314,6 +322,7 @@ public class BeaconList extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		initHttpServer();
 
 		if (!beaconManager.hasBluetooth()) {
 			Toast.makeText(this, "Device does not have Bluetooth Low Energy",
@@ -352,7 +361,9 @@ public class BeaconList extends Activity {
 			mBluetoothGatt.disconnect();
 			mBluetoothGatt.close();
 		}
-
+		if (server != null){
+			server.stop();
+		server = null;}
 		super.onStop();
 	}
 }
