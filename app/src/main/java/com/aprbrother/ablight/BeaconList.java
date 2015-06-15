@@ -71,6 +71,45 @@ public class BeaconList extends Activity {
 
 	private long lastTime;
 
+	private BluetoothGattCallback myGattCallback = new BluetoothGattCallback() {
+
+		@Override
+		public void onConnectionStateChange(BluetoothGatt gatt, int status,
+											int newState) {
+			Log.i(TAG, "connect newState = " + newState);
+			if (newState == BluetoothProfile.STATE_CONNECTED) {
+				Log.i(TAG, "Attempting to start service discovery:"
+						+ mBluetoothGatt.discoverServices());
+
+			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+				Log.i(TAG, "Disconnected from GATT server.");
+			}
+			super.onConnectionStateChange(gatt, status, newState);
+		}
+
+		@Override
+		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+			Log.i(TAG, "onServicesDiscovered status = " + status);
+//			DetailActivity.this.runOnUiThread(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//					tv.setText("disconnect");
+//				}
+//			});
+//			enableTXNotification();
+			super.onServicesDiscovered(gatt, status);
+		}
+
+		@Override
+		public void onCharacteristicWrite(BluetoothGatt gatt,
+										  BluetoothGattCharacteristic characteristic, int status) {
+			Log.i(TAG, "onCharacteristicWrite status = " + status);
+			super.onCharacteristicWrite(gatt, characteristic, status);
+		}
+
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,16 +128,15 @@ public class BeaconList extends Activity {
 		Log.w("Httpd", "Web server initialized.");
 	}
 
-	/**
-	 * 初始化操作
-	 */
-
 	public void control(String macAdd) {
+
 		System.out.println("ddebug inside control");
-//		BeaconList list =  new BeaconList();
-		beacon = this.getBeaconByMacAdd(macAdd);
+		beacon = this.getBeaconByMacAdd("D0:FF:50:67:7C:4A");
+//		beacon = this.getBeaconByMacAdd(macAdd);
 		myDevice = deviceFromBeacon(beacon);
 		mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
+		mBluetoothGatt.connect();
+		mBluetoothGatt.discoverServices();
 		System.out.println("ddebug about to write 100 to"+beacon.getMacAddress());
 		write(10);
 		if(mBluetoothGatt != null) {
@@ -134,15 +172,21 @@ public class BeaconList extends Activity {
 
 	}
 
-	public boolean writeCharacteristic(byte[] value, UUID mService,
-									   UUID mCharacteristic) {
+	public boolean writeCharacteristic(byte[] value, UUID mService, UUID mCharacteristic) {
 		int tries = 10;
+		try{
+			Thread.sleep(5000);
+		}catch(Exception e){
+
+		}
 		if (RxService == null) {
 			int i=0;
 			while(RxService == null && i < tries) {
 				i++;
+				System.out.println("ddebug here RxService");
 				RxService = mBluetoothGatt.getService(mService);
 			}
+
 		}
 		showMessage("mBluetoothGatt RxService null" + mBluetoothGatt);
 		if (RxService == null) {
@@ -154,6 +198,7 @@ public class BeaconList extends Activity {
 			while(RxChar == null && i < tries) {
 				i++;
 				RxChar = RxService.getCharacteristic(mCharacteristic);
+				System.out.println("ddebug here RxChar");
 			}
 		}
 		if (RxChar == null) {
@@ -177,38 +222,10 @@ public class BeaconList extends Activity {
 		return status;
 	}
 
-	private BluetoothGattCallback myGattCallback = new BluetoothGattCallback() {
-
-		@Override
-		public void onConnectionStateChange(BluetoothGatt gatt, int status,
-											int newState) {
-			Log.i(TAG, "connect newState = " + newState);
-			if (newState == BluetoothProfile.STATE_CONNECTED) {
-				Log.i(TAG, "Attempting to start service discovery:"
-						+ mBluetoothGatt.discoverServices());
-
-			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-				Log.i(TAG, "Disconnected from GATT server.");
-			}
-			super.onConnectionStateChange(gatt, status, newState);
-		}
-
-		@Override
-		public void onCharacteristicWrite(BluetoothGatt gatt,
-										  BluetoothGattCharacteristic characteristic, int status) {
-			Log.i(TAG, "onCharacteristicWrite status = " + status);
-			super.onCharacteristicWrite(gatt, characteristic, status);
-		}
-
-	};
-
 	private void showMessage(String msg) {
 		System.out.println("ddebug"+msg);
 		Log.e(TAG, msg);
 	}
-
-
-
 
 	public Beacon getBeaconByMacAdd(String s){
 		//find from mac address
