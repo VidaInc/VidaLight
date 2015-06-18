@@ -77,6 +77,7 @@ public class BeaconList extends Activity {
 		public void onConnectionStateChange(BluetoothGatt gatt, int status,
 											int newState) {
 			Log.i(TAG, "connect newState = " + newState);
+			showMessage("status change " + newState);
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
 				Log.i(TAG, "Attempting to start service discovery:"
 						+ mBluetoothGatt.discoverServices());
@@ -89,6 +90,7 @@ public class BeaconList extends Activity {
 
 		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+			showMessage("service discovered!!!!!");
 			Log.i(TAG, "onServicesDiscovered status = " + status);
 //			DetailActivity.this.runOnUiThread(new Runnable() {
 //
@@ -104,6 +106,7 @@ public class BeaconList extends Activity {
 		@Override
 		public void onCharacteristicWrite(BluetoothGatt gatt,
 										  BluetoothGattCharacteristic characteristic, int status) {
+			showMessage("Writing status:"+status);
 			Log.i(TAG, "onCharacteristicWrite status = " + status);
 			super.onCharacteristicWrite(gatt, characteristic, status);
 		}
@@ -137,9 +140,21 @@ public class BeaconList extends Activity {
 		mBluetoothGatt = myDevice.connectGatt(this, false, myGattCallback);
 		mBluetoothGatt.connect();
 		mBluetoothGatt.discoverServices();
-		System.out.println("ddebug about to write 100 to"+beacon.getMacAddress());
-		write(10);
+		System.out.println("ddebug about to write 100 to" + beacon.getMacAddress());
+
+
+		int i = 0;
+		int[] a = {10,50,100,0};
+		if(i==4){i=0;}
+		write(a[i++]);
+		try{
+			Thread.sleep(5000);
+			showMessage("sleeping");
+		}catch(Exception e){
+
+		}
 		if(mBluetoothGatt != null) {
+			showMessage("closing and disconnect");
 			mBluetoothGatt.disconnect();
 			mBluetoothGatt.close();
 		}
@@ -164,31 +179,27 @@ public class BeaconList extends Activity {
 		value[3] = 1;
 		value[4] = 1;
 		value[5] = (byte) (value[1] ^ value[2] ^ value[3] ^ value[4]);
-		System.out.println("ddebug writing");
+		System.out.println("ddebug writing"+i);
 		int NumOfTries = 10;
 		boolean status = false;
 
 			status = writeCharacteristic(value, BEACONSERVICEUUID, BEACONPROXIMITYUUID);
-
+showMessage("writing status "+status);
 	}
 
 	public boolean writeCharacteristic(byte[] value, UUID mService, UUID mCharacteristic) {
 		int tries = 10;
-		try{
-			Thread.sleep(5000);
-		}catch(Exception e){
 
-		}
 		if (RxService == null) {
 			int i=0;
 			while(RxService == null && i < tries) {
 				i++;
-				System.out.println("ddebug here RxService");
 				RxService = mBluetoothGatt.getService(mService);
+				System.out.println("ddebug here RxService"+RxService.toString());
 			}
 
 		}
-		showMessage("mBluetoothGatt RxService null" + mBluetoothGatt);
+//		showMessage("mBluetoothGatt RxService null" + mBluetoothGatt);
 		if (RxService == null) {
 			showMessage("Rx service not found! in control");
 			return false;
@@ -198,7 +209,7 @@ public class BeaconList extends Activity {
 			while(RxChar == null && i < tries) {
 				i++;
 				RxChar = RxService.getCharacteristic(mCharacteristic);
-				System.out.println("ddebug here RxChar");
+				System.out.println("ddebug here RxChar"+RxChar.getDescriptor(mCharacteristic));
 			}
 		}
 		if (RxChar == null) {
@@ -206,10 +217,10 @@ public class BeaconList extends Activity {
 			return false;
 		}
 		RxChar.setValue(value);
+		showMessage("RxChar.setValue(value)"+ value);
 
-
-		boolean	status = mBluetoothGatt.writeCharacteristic(RxChar);
-
+		boolean status = mBluetoothGatt.writeCharacteristic(RxChar);
+		showMessage("status          " + status);
 
 
 

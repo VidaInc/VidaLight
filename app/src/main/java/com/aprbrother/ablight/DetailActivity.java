@@ -104,7 +104,10 @@ public class DetailActivity extends Activity {
 			return false;
 		}
 		RxChar.setValue(value);
+		showMessage("RxChar.setValue(value)" + value);
 		boolean status = mBluetoothGatt.writeCharacteristic(RxChar);
+		showMessage("status          " + status);
+
 		Log.d(TAG, "write TXchar - status=" + status);
 		try {
 			Thread.sleep(10);
@@ -115,6 +118,7 @@ public class DetailActivity extends Activity {
 	}
 
 	private void showMessage(String msg) {
+		System.out.println("ddebug DA:"+msg);
 		Log.e(TAG, msg);
 	}
 
@@ -124,6 +128,7 @@ public class DetailActivity extends Activity {
 		public void onConnectionStateChange(BluetoothGatt gatt, int status,
 				int newState) {
 			Log.i(TAG, "connect newState = " + newState);
+			showMessage("Status Change"+newState);
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
 				Log.i(TAG, "Attempting to start service discovery:"
 						+ mBluetoothGatt.discoverServices());
@@ -136,6 +141,7 @@ public class DetailActivity extends Activity {
 
 		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+			showMessage("Service Discovered!");
 			Log.i(TAG, "onServicesDiscovered status = " + status);
 //			DetailActivity.this.runOnUiThread(new Runnable() {
 //				
@@ -151,6 +157,7 @@ public class DetailActivity extends Activity {
 		@Override
 		public void onCharacteristicWrite(BluetoothGatt gatt,
 				BluetoothGattCharacteristic characteristic, int status) {
+			showMessage("Writing status:"+status);
 			Log.i(TAG, "onCharacteristicWrite status = " + status);
 			super.onCharacteristicWrite(gatt, characteristic, status);
 		}
@@ -167,6 +174,7 @@ public class DetailActivity extends Activity {
 	}
 
 	private void write(int i) {
+		showMessage("write value " + i);
 		byte[] value = new byte[6];
 		value[0] = 'e';
 		value[1] = (byte) i;
@@ -261,6 +269,7 @@ public class DetailActivity extends Activity {
 	@Override
 	protected void onStop() {
 		if (mBluetoothGatt != null) {
+			showMessage("close");
 			mBluetoothGatt.disconnect();
 			mBluetoothGatt.close();
 		}
