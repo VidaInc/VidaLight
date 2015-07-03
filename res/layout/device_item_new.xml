@@ -24,7 +24,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             android:tag="name"
-            android:text="ABLight"
+            android:text="Vida Light"
             android:textSize="16sp" />
     </LinearLayout>
 

@@ -15,7 +15,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/vida_icon" />
 
         <TextView
             android:id="@+id/tv_item"
@@ -24,7 +24,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="20dp"
             android:tag="name"
-            android:text="ABLight"
+            android:text="VidaLight"
             android:textSize="16sp" />
     </LinearLayout>
 

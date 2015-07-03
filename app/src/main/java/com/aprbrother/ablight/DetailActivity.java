@@ -100,7 +100,7 @@ public class DetailActivity extends Activity {
 		if (RxChar == null)
 			RxChar = RxService.getCharacteristic(mCharacteristic);
 		if (RxChar == null) {
-			showMessage("Rx charateristic not found!");
+			showMessage("Rx characteristic not found!");
 			return false;
 		}
 		RxChar.setValue(value);
@@ -120,6 +120,7 @@ public class DetailActivity extends Activity {
 	private void showMessage(String msg) {
 		System.out.println("ddebug DA:"+msg);
 		Log.e(TAG, msg);
+		System.out.println("ddebug"+msg);
 	}
 
 	private BluetoothGattCallback myGattCallback = new BluetoothGattCallback() {

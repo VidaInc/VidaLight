@@ -84,7 +84,6 @@ public class JasonParse {
                     }
                     // call Jack's function with beaconTreeMap
                     Predict p = new Predict(rssiArray);
-                    System.out.println("ddebug"+rssiArray[0]);
                     result = p.RoomPrediction().getMinor();
 
                     Log.d("minor id", p.RoomPrediction().getMinor());

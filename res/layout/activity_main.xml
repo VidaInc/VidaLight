@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="ABLights"
+            android:text="VidaLights"
             android:textColor="#0000ff"
             android:textSize="20sp" />
     </RelativeLayout>
